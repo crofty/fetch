@@ -65,13 +65,16 @@
   (p/let [body bodyp]
     (j/call bodyp :json)))
 
-(defn fetch-opts [{:keys [method accept content-type]
+(defn fetch-opts [{:keys [method accept content-type headers]
                    :or   {method       :get
                           accept       :transit-json
-                          content-type :transit-json}}]
+                          content-type :transit-json
+                          headers      {}}}]
   #js {:method   (str/upper-case (name method))
-       :headers  #js {"Accept"       (c/get content-types accept)
-                      "Content-Type" (c/get content-types content-type)}
+       :headers  (clj->js (merge 
+                            {"Accept"       (c/get content-types accept)
+                             "Content-Type" (c/get content-types content-type)}
+                            headers)) 
        :redirect "follow"})
 
 (defn request [url & [{:keys [method accept content-type query-params body]
